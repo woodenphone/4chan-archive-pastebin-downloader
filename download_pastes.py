@@ -151,7 +151,7 @@ def download_users_from_file(user_list_filepath, output_dir):
         c = 0
         for line in uf:
             c += 1
-            if c % 100:
+            if c % 100 == 0:
                 print('Up to users line {0}'.format(c))
 
             user_link = line.strip()
@@ -166,7 +166,7 @@ def download_pastes_from_file(paste_list_filepath, output_dir):
         c = 0
         for line in pf:
             c += 1
-            if c % 100:
+            if c % 100 == 0:
                 print('Up to pastes line {0}'.format(c))
 
             paste_link = line.strip()
