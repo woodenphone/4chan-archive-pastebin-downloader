@@ -4,6 +4,8 @@ download/
 
 
 config.py
+config_pastebin.py
+config_archive_scan.py
 
 found*.txt
 
