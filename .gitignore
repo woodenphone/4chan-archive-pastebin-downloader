@@ -2,6 +2,9 @@ debug/
 private/
 download/
 
+
 config.py
+
+found*.txt
 
 *.pyc

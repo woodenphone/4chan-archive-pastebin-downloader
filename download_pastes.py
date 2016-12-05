@@ -151,7 +151,12 @@ download_user_pastes(user='waterapple', output_dir=output_dir)
 
 def main():
     logging.basicConfig()
-    pass
+    if not test_scraping_api():
+        logging.error('Pastebin scraping API unavailible.')
+        return
+    else:
+        pass
+
 
 if __name__ == '__main__':
     main()
