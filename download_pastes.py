@@ -196,7 +196,7 @@ def main():
 
     else:
         # Create output folder if it does not exist
-        output_dir = os.path.join('download')
+        output_dir = config.OUTPUT_DIR
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
