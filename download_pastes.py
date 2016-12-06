@@ -148,31 +148,37 @@ def test_scraping_api():
 
 def download_users_from_file(user_list_filepath, output_dir):
     with open(user_list_filepath, "rb") as uf:
-        c = 0
-        for line in uf:
-            c += 1
-            if c % 100 == 0:
-                print('Up to users line {0}'.format(c))
+        with open(config.DONE_USERS_FILEPATH, 'wb') as df:
+            c = 0
+            for line in uf:
+                c += 1
+                if c % 100 == 0:
+                    print('Up to users line {0}'.format(c))
 
-            user_link = line.strip()
-            user = re.search('http://pastebin.com/u/([a-zA-Z0-9-_]+)', user_link).group(1)
-            download_user_pastes(user=user, output_dir=output_dir)
-            continue
+                user_link = line.strip()
+                user = re.search('http://pastebin.com/u/([a-zA-Z0-9-_]+)', user_link).group(1)
+                download_user_pastes(user=user, output_dir=output_dir)
+
+                df.write('{0}\n'.format(user))
+                continue
     return
 
 
 def download_pastes_from_file(paste_list_filepath, output_dir):
     with open(paste_list_filepath, "rb") as pf:
-        c = 0
-        for line in pf:
-            c += 1
-            if c % 100 == 0:
-                print('Up to pastes line {0}'.format(c))
+        with open(config.DONE_PASTES_FILEPATH, 'wb') as df:
+            c = 0
+            for line in pf:
+                c += 1
+                if c % 100 == 0:
+                    print('Up to pastes line {0}'.format(c))
 
-            paste_link = line.strip()
-            paste_id = re.search('pastebin.com/[a-zA-Z0-9]({8})', paste_link).group(1)
-            download_paste(paste_id, output_dir=output_dir)
-            continue
+                paste_link = line.strip()
+                paste_id = re.search('pastebin.com/([a-zA-Z0-9]{8})', paste_link).group(1)
+                download_paste(paste_id, output_dir=output_dir)
+
+                df.write('{0}\n'.format(paste_id))
+                continue
     return
 
 
@@ -187,9 +193,12 @@ def main():
         output_dir = os.path.join('download')
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
+
         # Perform downloads
-        download_users_from_file(user_list_filepath=config.FOUND_USERS_FILEPATH, output_dir=output_dir)
         download_pastes_from_file(paste_list_filepath=config.FOUND_PASTES_FILEPATH, output_dir=output_dir)
+
+        download_users_from_file(user_list_filepath=config.FOUND_USERS_FILEPATH, output_dir=output_dir)
+
     print('Done.')
     return
 
