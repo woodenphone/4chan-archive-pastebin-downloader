@@ -12,6 +12,7 @@
 import logging
 import os
 import re
+import time
 # Libraries
 import requests
 # Local
@@ -19,6 +20,49 @@ import config_pastebin as config
 
 
 
+def fetch(url):
+    for try_num in range(10):
+        logging.debug('Fetch %s' % (url))
+        if try_num > 1:
+            time.sleep(30)# Back off a bit if something goes wrong
+        try:
+            response = requests.get(url, timeout=300)
+        except requests.exceptions.Timeout, err:
+            logging.exception(err)
+            logging.error('Caught requests.exceptions.Timeout')
+            continue
+        except requests.exceptions.ConnectionError, err:
+            logging.exception(err)
+            logging.error('Caught requests.exceptions.ConnectionError')
+            continue
+        except requests.exceptions.ChunkedEncodingError, err:
+            logging.exception(err)
+            logging.error('Caught requests.exceptions.ChunkedEncodingError')
+            continue
+        else:
+            time.sleep(1)
+            return response
+
+    raise Exception('Giving up!')
+
+
+def uniquify(seq, idfun=None):
+    # List uniquifier from
+    # http://www.peterbe.com/plog/uniqifiers-benchmark
+   # order preserving
+   if idfun is None:
+       def idfun(x): return x
+   seen = {}
+   result = []
+   for item in seq:
+       marker = idfun(item)
+       # in old Python versions:
+       # if seen.has_key(marker)
+       # but in new ones:
+       if marker in seen: continue
+       seen[marker] = 1
+       result.append(item)
+   return result
 
 
 def download_paste(paste_id, output_dir):
@@ -34,15 +78,15 @@ def download_paste(paste_id, output_dir):
 
     # Skip if known bad pasteID
     if paste_id in ['scraping',]:
-        print('PasteID forbidden: {0}'.format(pasteid))
+        print('PasteID forbidden: {0}'.format(paste_id))
 
     # Get paste metadata
     metadata_url = 'http://pastebin.com/api_scrape_item_meta.php?i={0}'.format(paste_id)
-    metadata_response = requests.get(metadata_url)
+    metadata_response = fetch(metadata_url)
 
     # Get paste raw data
     item_url = 'http://pastebin.com/api_scrape_item.php?i={0}'.format(paste_id)
-    item_response = requests.get(item_url)
+    item_response = fetch(item_url)
 
     # Save both metadata and raw data
     with open(metadata_filepath, "wb") as mf:
@@ -71,7 +115,7 @@ def download_user_pastes(user, output_dir):
         # Load the page
         user_page_url = 'http://pastebin.com/u/{0}/{1}'.format(user, p)
         print('Loading: {0!r}'.format(user_page_url))
-        user_page_request = requests.get(user_page_url)
+        user_page_request = fetch(user_page_url)
         page = user_page_request.content
         # Parse that page
         # Stop if this is the last page
@@ -102,7 +146,7 @@ def download_user_pastes(user, output_dir):
 def test_scraping_api():
     # Verify we're authenticated
     api_test_url = 'http://pastebin.com/api_scraping.php'
-    api_test_request = requests.get(api_test_url)
+    api_test_request = fetch(api_test_url)
 
     if len(api_test_request.content) < 200:
         print('API test response was too short')

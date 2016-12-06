@@ -19,7 +19,23 @@ import config_archive_scan as config
 
 
 
-
+def uniquify(seq, idfun=None):
+    # List uniquifier from
+    # http://www.peterbe.com/plog/uniqifiers-benchmark
+   # order preserving
+   if idfun is None:
+       def idfun(x): return x
+   seen = {}
+   result = []
+   for item in seq:
+       marker = idfun(item)
+       # in old Python versions:
+       # if seen.has_key(marker)
+       # but in new ones:
+       if marker in seen: continue
+       seen[marker] = 1
+       result.append(item)
+   return result
 
 
 # To find pastebins for a board:
@@ -48,6 +64,11 @@ for page in xrange(1, config.MAX_SEARCH_PAGES):
 
 print('Finished searching for links.')
 
+# Remove duplicates
+all_paste_links = uniquify(all_paste_links)
+all_user_links = uniquify(all_user_links)
+
+
 # Save what we found.
 with open(config.FOUND_USERS_FILEPATH, "wb") as uf:
     for user_link in all_user_links:
@@ -57,6 +78,7 @@ with open(config.FOUND_PASTES_FILEPATH, "wb") as pf:
     for paste_link in all_paste_links:
         pf.write('{0}\n'.format(paste_link))
 
+print('Done.')
 
 
 def main():
