@@ -32,6 +32,10 @@ def download_paste(paste_id, output_dir):
     if os.path.exists(item_filepath) and os.path.exists(metadata_filepath):
         return False
 
+    # Skip if known bad pasteID
+    if paste_id in ['scraping',]:
+        print('PasteID forbidden: {0}'.format(pasteid))
+
     # Get paste metadata
     metadata_url = 'http://pastebin.com/api_scrape_item_meta.php?i={0}'.format(paste_id)
     metadata_response = requests.get(metadata_url)
@@ -161,6 +165,7 @@ def download_users_from_file(user_list_filepath, output_dir):
 
                 df.write('{0}\n'.format(user))
                 continue
+    print('Finished saving users from file.')
     return
 
 
@@ -179,13 +184,14 @@ def download_pastes_from_file(paste_list_filepath, output_dir):
 
                 df.write('{0}\n'.format(paste_id))
                 continue
+    print('Finished saving pastes from file.')
     return
 
 
 def main():
     #logging.basicConfig()
     if not test_scraping_api():
-        logging.error('Pastebin scraping API unavailible.')
+        print('Pastebin scraping API unavailible.')
         return
 
     else:
