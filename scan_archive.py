@@ -13,11 +13,39 @@ import logging
 import os
 import re
 import datetime
+import time
 # Libraries
 import requests
 # Local
 import config_archive_scan as config
 
+
+
+
+def fetch(url):
+    for try_num in range(10):
+        logging.debug('Fetch %s' % (url))
+        if try_num > 1:
+            time.sleep(30)# Back off a bit if something goes wrong
+        try:
+            response = requests.get(url, timeout=300)
+        except requests.exceptions.Timeout, err:
+            logging.exception(err)
+            logging.error('Caught requests.exceptions.Timeout')
+            continue
+        except requests.exceptions.ConnectionError, err:
+            logging.exception(err)
+            logging.error('Caught requests.exceptions.ConnectionError')
+            continue
+        except requests.exceptions.ChunkedEncodingError, err:
+            logging.exception(err)
+            logging.error('Caught requests.exceptions.ChunkedEncodingError')
+            continue
+        else:
+            time.sleep(1)
+            return response
+
+    raise Exception('Giving up!')
 
 
 def uniquify(seq, idfun=None):
@@ -65,7 +93,7 @@ while low_date < config.END_DATE:
         search_page_url = '{base}/{board}/search/text/pastebin/start/{low}/end/{high}/page/{page_num}/'.format(
             base=config.BASE_URL, board=config.BOARD, low=low_date_str, high=high_date_str, page_num=page_num)
         print('Loading: {0!r}'.format(search_page_url))
-        search_page_request = requests.get(search_page_url)
+        search_page_request = fetch(search_page_url)
         search_page = search_page_request.content
 
         # Find all pastebin user links
