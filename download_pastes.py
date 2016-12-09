@@ -203,7 +203,8 @@ def download_users_from_file(user_list_filepath, output_dir):
                 c += 1
                 if c % 100 == 0:
                     print('Up to users line {0}'.format(c))
-
+                if line[0] in ['#','\r','\n']:# Skip empty lines and comments
+                    continue
                 user_link = line.strip()
                 user = re.search('http://pastebin.com/u/([a-zA-Z0-9-_]+)', user_link).group(1)
                 download_user_pastes(user=user, output_dir=output_dir)
@@ -222,7 +223,8 @@ def download_pastes_from_file(paste_list_filepath, output_dir):
                 c += 1
                 if c % 100 == 0:
                     print('Up to pastes line {0}'.format(c))
-
+                if line[0] in ['#','\r','\n']:# Skip empty lines and comments
+                    continue
                 paste_link = line.strip()
                 paste_id = re.search('pastebin.com/([a-zA-Z0-9]{8})', paste_link).group(1)
                 download_paste(paste_id, output_dir=output_dir)
