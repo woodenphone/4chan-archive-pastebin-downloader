@@ -206,7 +206,7 @@ def download_users_from_file(user_list_filepath, output_dir):
                 if line[0] in ['#','\r','\n']:# Skip empty lines and comments
                     continue
                 user_link = line.strip()
-                user = re.search('http://pastebin.com/u/([a-zA-Z0-9-_]+)', user_link).group(1)
+                user = re.search('pastebin.com/u/([a-zA-Z0-9-_]+)', user_link).group(1)
                 download_user_pastes(user=user, output_dir=output_dir)
 
                 df.write('{0}\n'.format(user))
@@ -248,7 +248,7 @@ def main():
             os.makedirs(output_dir)
 
         # Perform downloads
-        download_pastes_from_file(paste_list_filepath=config.FOUND_PASTES_FILEPATH, output_dir=output_dir)
+        #download_pastes_from_file(paste_list_filepath=config.FOUND_PASTES_FILEPATH, output_dir=output_dir)
 
         download_users_from_file(user_list_filepath=config.FOUND_USERS_FILEPATH, output_dir=output_dir)
 
