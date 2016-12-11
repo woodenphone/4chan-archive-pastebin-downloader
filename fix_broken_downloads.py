@@ -82,9 +82,12 @@ def download_broken_paste(paste_id, output_dir):
 def delete_broken_pastes(input_filepath):
     print('Deleting files listed in {0!r}'.format(input_filepath))
     # Get the list of filepaths
+    c = 0
     with open(input_filepath, "rb") as lf:
         for line in lf:
-            print('Deleting entry: {0!r}'.format(line))
+            c += 1
+            if line[0] in ['#', '\r', '\n']: continue# Skip empty lines and comments
+            print('Deleting entry on line {1}: {0!r}'.format(line, c))
             # Split into output_dir and paste_id
             full_filepath = lf.strip()
             # Delete them
@@ -108,9 +111,12 @@ def check_if_download_is_appropriate(file_path):
 def redownload_broken_pastes(input_filepath):
     print('Redownloading pastes listed in {0!r}'.format(input_filepath))
     # Get the list of filepaths
+    c = 0
     with open(input_filepath, "rb") as lf:
         for line in lf:
-            print('Redownloading entry: {0!r}'.format(line))
+            c += 1
+            if line[0] in ['#', '\r', '\n']: continue# Skip empty lines and comments
+            print('Redownloading entry on line {1}: {0!r}'.format(line, c))
             # Split into output_dir and paste_id
             full_filepath = line.strip()
             folder_path, filename = os.path.split(full_filepath)

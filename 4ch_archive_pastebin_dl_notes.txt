@@ -7,9 +7,13 @@ Notes for pastebin downloader and foolfuuka archive link finder
 These are error messages.
     'Error, we cannot find this paste.'
     Signifies that a paste was either deleted or never existed
+    
     'Error, this is not a public paste.'
     Signifies that this paste is not set to public - may be either unlisted or private
     Should recheck these ones with different method such as webpage or non-api /raw/
+
+    'Error, this is a private paste. If this is your private paste, please login to Pastebin first.':# Private paste /raw/
+    When trying to use the public/basic /raw/ link for a private paste 
 
 
 
