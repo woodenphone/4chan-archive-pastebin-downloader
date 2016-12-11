@@ -69,33 +69,48 @@ def download_paste(paste_id, output_dir):
     """Save a single paste"""
     assert(len(paste_id) == 8)
     # Prebuild filepaths
-    scrape_api_item_filepath = os.path.join(output_dir, '{0}.api_raw.txt'.format(paste_id))
-    raw_download_item_filepath = os.path.join(output_dir, '{0}.raw.txt'.format(paste_id))
+    scrape_filepath = os.path.join(output_dir, '{0}.api_raw.txt'.format(paste_id))
+    raw_filepath = os.path.join(output_dir, '{0}.raw.txt'.format(paste_id))
+    webpage_filepath = os.path.join(output_dir, '{0}.htm'.format(paste_id))
     metadata_filepath = os.path.join(output_dir, '{0}.json'.format(paste_id))
-
-    # Skip if already saved
-    if os.path.exists(scrape_api_item_filepath) and os.path.exists(metadata_filepath):
-        return False
 
     # Skip if known bad pasteID
     if paste_id in ['scraping',]:
         print('PasteID forbidden: {0}'.format(paste_id))
-        return
+        return False
 
+    # Download things
     # Get paste metadata
-    metadata_url = 'http://pastebin.com/api_scrape_item_meta.php?i={0}'.format(paste_id)
-    metadata_response = fetch(metadata_url)
+    if not os.path.exists(metadata_filepath):
+        metadata_url = 'http://pastebin.com/api_scrape_item_meta.php?i={0}'.format(paste_id)
+        metadata_response = fetch(metadata_url)
+        if (metadata_response.content[0:9] == 'THIS IP: ') and (metadata_response.content[-70:] == 'ES NOT HAVE ACCESS. VISIT: http://pastebin.com/scraping TO GET ACCESS!'):# Scraping  API not configured
+            raise Exception('API failure!')
+        with open(metadata_filepath, "wb") as meta_f:# API metadata
+            meta_f.write(metadata_response.content)
 
-    # Get paste raw data
-    scrape_api_item_url = 'http://pastebin.com/api_scrape_item.php?i={0}'.format(paste_id)
-    scrape_api_item_response = fetch(scrape_api_item_url)
+    # Get paste scrape api raw data
+    if not os.path.exists(scrape_filepath):
+        scrape_url = 'http://pastebin.com/api_scrape_item.php?i={0}'.format(paste_id)
+        scrape_response = fetch(scrape_url)
+        if (scrape_response.content[0:9] == 'THIS IP: ') and (scrape_response.content[-70:] == 'ES NOT HAVE ACCESS. VISIT: http://pastebin.com/scraping TO GET ACCESS!'):# Scraping  API not configured
+            raise Exception('API failure!')
+        with open(scrape_filepath, "wb") as api_f:# API raw paste
+            api_f.write(scrape_response.content)
 
-    # Save both metadata and raw data
-    with open(metadata_filepath, "wb") as mf:
-        mf.write(metadata_response.content)
+    # Get paste regular raw data
+    if not os.path.exists(raw_filepath):
+        raw_url = 'http://pastebin.com/raw/{0}'.format(paste_id)
+        raw_response = fetch(raw_url)
+        with open(raw_filepath, "wb") as reg_f:# Regular raw paste
+            reg_f.write(raw_response.content)
 
-    with open(scrape_api_item_filepath, "wb") as mf:
-        mf.write(scrape_api_item_response.content)
+    # Get paste webpage data
+    if not os.path.exists(webpage_filepath):
+        webpage_url = 'http://pastebin.com/{0}'.format(paste_id)
+        webpage_response = fetch(webpage_url)
+        with open(webpage_filepath, "wb") as web_f:# Webpage of paste
+            web_f.write(webpage_response.content)
 
     print('Saved pasteID {0!r}'.format(paste_id))
     return True

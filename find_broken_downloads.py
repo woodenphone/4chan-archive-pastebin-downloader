@@ -25,6 +25,8 @@ def check_file(file_path):
             return False
         elif data == 'Error, this is a private paste. If this is your private paste, please login to Pastebin first.':# Private paste /raw/
             return False
+        elif (data[0:9] == 'THIS IP: ') and (data[-70:] == 'ES NOT HAVE ACCESS. VISIT: http://pastebin.com/scraping TO GET ACCESS!'):# Scraping  API not configured
+            return False
     return True
 
 

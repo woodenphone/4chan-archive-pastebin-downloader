@@ -16,66 +16,8 @@ import time
 # Libraries
 import requests
 # Local
-from download_pastes import fetch
+from download_pastes import fetch, test_scraping_api, download_paste
 
-
-
-
-
-def download_broken_paste(paste_id, output_dir):
-    """Save a single paste"""
-    assert(len(paste_id) == 8)
-    # Prebuild filepaths
-    scrape_filepath = os.path.join(output_dir, '{0}.api_raw.txt'.format(paste_id))
-    raw_filepath = os.path.join(output_dir, '{0}.raw.txt'.format(paste_id))
-    webpage_filepath = os.path.join(output_dir, '{0}.htm'.format(paste_id))
-    metadata_filepath = os.path.join(output_dir, '{0}.json'.format(paste_id))
-
-    # Skip if already saved
-    if (os.path.exists(scrape_filepath)
-        and os.path.exists(raw_filepath)
-        and os.path.exists(webpage_filepath)
-        and os.path.exists(metadata_filepath)):
-        print('Already saved')
-        return None
-
-    # Skip if known bad pasteID
-    if paste_id in ['scraping',]:
-        print('PasteID forbidden: {0}'.format(paste_id))
-        return False
-
-    # Download things
-    # Get paste metadata
-    metadata_url = 'http://pastebin.com/api_scrape_item_meta.php?i={0}'.format(paste_id)
-    metadata_response = fetch(metadata_url)
-
-    # Get paste scrape api raw data
-    scrape_url = 'http://pastebin.com/api_scrape_item.php?i={0}'.format(paste_id)
-    scrape_response = fetch(scrape_url)
-
-    # Get paste regular raw data
-    raw_url = 'http://pastebin.com/raw/{0}'.format(paste_id)
-    raw_response = fetch(raw_url)
-
-    # Get paste webpage data
-    webpage_url = 'http://pastebin.com/{0}'.format(paste_id)
-    webpage_response = fetch(webpage_url)
-
-    # Save data
-    with open(metadata_filepath, "wb") as mf:# API metadata
-        mf.write(metadata_response.content)
-
-    with open(scrape_filepath, "wb") as mf:# API raw paste
-        mf.write(scrape_response.content)
-
-    with open(raw_filepath, "wb") as mf:# Regular raw paste
-        mf.write(raw_response.content)
-
-    with open(webpage_filepath, "wb") as mf:# Webpage of paste
-        mf.write(webpage_response.content)
-
-    print('Saved pasteID {0!r}'.format(paste_id))
-    return True
 
 
 
@@ -99,11 +41,18 @@ def delete_broken_pastes(input_filepath):
 
 
 def check_if_download_is_appropriate(file_path):
+    """Return wheter it is appropriate to redownload a paste/file
+    Return True if it should be redownloaded, return False if it should not be.
+    Raise an exception is it is not recognized."""
     with open(file_path, "rb") as f:
         data = f.read()
         if data == 'Error, this is not a public paste.':# Unlisted?
             return True
         elif data == 'Error, we cannot find this paste.':# Deleted or otherwise invalid pasteid?
+            return False
+        elif (data[0:9] == 'THIS IP: ') and (data[-70:] == 'ES NOT HAVE ACCESS. VISIT: http://pastebin.com/scraping TO GET ACCESS!'):# Scraping  API not configured
+            return True
+        elif data == 'Error, this is a private paste. If this is your private paste, please login to Pastebin first.':# Private paste /raw/
             return False
     raise Exception('Unexpected file contents!')
 
@@ -132,7 +81,7 @@ def redownload_broken_pastes(input_filepath):
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
             # Perform download
-            success = download_broken_paste(paste_id, output_dir)
+            success = download_paste(paste_id, output_dir)
             assert(success is not False)# We should stop is something fails
             continue
     print('Finished redownloading pastes listed in {0!r}'.format(input_filepath))
@@ -140,6 +89,7 @@ def redownload_broken_pastes(input_filepath):
 
 
 def main():
+    test_scraping_api()
     input_filepath = os.path.join('debug', 'find_broken_downloads.failed_test.txt')
     redownload_broken_pastes(input_filepath)
 

@@ -1,6 +1,10 @@
 4ch_archive_pastebin_dl_notes.txt
 Notes for pastebin downloader and foolfuuka archive link finder
 
+Important not to users:
+This stuff isn't supported for any use without a lifetime pro account correctly set up for your IP.
+I'm not going to bother even trying to bypass any anti-scraping measures the account can fix.
+
 
 
 -Known bad paste contents-
@@ -30,3 +34,19 @@ given PASTE_ID and OUTPUT_DIR:
 
     http://pastebin.com/PASTE_ID
     -> OUTPUT_DIR/PASTE_ID.htm
+
+
+
+
+
+
+
+
+
+
+
+
+-Bulk remane unility stuff-
+Regex for updating filenames from PASTE_ID.txt to PASTE_ID.api_raw.txt
+([a-zA-z0-9][{8})
+\1.api_raw
