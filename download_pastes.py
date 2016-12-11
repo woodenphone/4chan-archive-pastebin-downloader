@@ -69,11 +69,12 @@ def download_paste(paste_id, output_dir):
     """Save a single paste"""
     assert(len(paste_id) == 8)
     # Prebuild filepaths
-    item_filepath = os.path.join(output_dir, '{0}.txt'.format(paste_id))
+    scrape_api_item_filepath = os.path.join(output_dir, '{0}.api_raw.txt'.format(paste_id))
+    raw_download_item_filepath = os.path.join(output_dir, '{0}.raw.txt'.format(paste_id))
     metadata_filepath = os.path.join(output_dir, '{0}.json'.format(paste_id))
 
     # Skip if already saved
-    if os.path.exists(item_filepath) and os.path.exists(metadata_filepath):
+    if os.path.exists(scrape_api_item_filepath) and os.path.exists(metadata_filepath):
         return False
 
     # Skip if known bad pasteID
@@ -86,15 +87,15 @@ def download_paste(paste_id, output_dir):
     metadata_response = fetch(metadata_url)
 
     # Get paste raw data
-    item_url = 'http://pastebin.com/api_scrape_item.php?i={0}'.format(paste_id)
-    item_response = fetch(item_url)
+    scrape_api_item_url = 'http://pastebin.com/api_scrape_item.php?i={0}'.format(paste_id)
+    scrape_api_item_response = fetch(scrape_api_item_url)
 
     # Save both metadata and raw data
     with open(metadata_filepath, "wb") as mf:
         mf.write(metadata_response.content)
 
-    with open(item_filepath, "wb") as mf:
-        mf.write(item_response.content)
+    with open(scrape_api_item_filepath, "wb") as mf:
+        mf.write(scrape_api_item_response.content)
 
     print('Saved pasteID {0!r}'.format(paste_id))
     return True

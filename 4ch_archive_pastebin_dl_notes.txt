@@ -3,7 +3,7 @@ Notes for pastebin downloader and foolfuuka archive link finder
 
 
 
-Known bad paste contents
+-Known bad paste contents-
 These are error messages.
     'Error, we cannot find this paste.'
     Signifies that a paste was either deleted or never existed
@@ -13,3 +13,16 @@ These are error messages.
 
 
 
+-Output path format-
+given PASTE_ID and OUTPUT_DIR:
+    http://pastebin.com/raw/PASTE_ID
+    -> OUTPUT_DIR/PASTE_ID.raw.txt
+    
+    http://pastebin.com/api_scrape_item.php?i=PASTE_ID
+    -> OUTPUT_DIR/PASTE_ID.api_raw.txt
+
+    http://pastebin.com/api_scrape_item_meta.php?i=PASTE_ID
+    -> OUTPUT_DIR/PASTE_ID.json
+
+    http://pastebin.com/PASTE_ID
+    -> OUTPUT_DIR/PASTE_ID.htm

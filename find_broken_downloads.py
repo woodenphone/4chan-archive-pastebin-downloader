@@ -23,6 +23,8 @@ def check_file(file_path):
             return False
         elif data == 'Error, this is not a public paste.':# Unlisted?
             return False
+        elif data == 'Error, this is a private paste. If this is your private paste, please login to Pastebin first.':# Private paste /raw/
+            return False
     return True
 
 
