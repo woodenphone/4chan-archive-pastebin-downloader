@@ -1,0 +1,15 @@
+4ch_archive_pastebin_dl_notes.txt
+Notes for pastebin downloader and foolfuuka archive link finder
+
+
+
+Known bad paste contents
+These are error messages.
+    'Error, we cannot find this paste.'
+    Signifies that a paste was either deleted or never existed
+    'Error, this is not a public paste.'
+    Signifies that this paste is not set to public - may be either unlisted or private
+    Should recheck these ones with different method such as webpage or non-api /raw/
+
+
+
