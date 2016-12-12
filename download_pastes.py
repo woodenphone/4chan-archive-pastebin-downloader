@@ -164,6 +164,7 @@ def test_scraping_api():
     # Verify we're authenticated
     api_test_url = 'http://pastebin.com/api_scraping.php'
     api_test_request = fetch(api_test_url)
+    print('api_test_request.content: {0}'.format(api_test_request.content))
 
     if len(api_test_request.content) < 200:
         print('API test response was too short')

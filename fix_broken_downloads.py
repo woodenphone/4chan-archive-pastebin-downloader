@@ -89,7 +89,9 @@ def redownload_broken_pastes(input_filepath):
 
 
 def main():
-    test_scraping_api()
+    if not test_scraping_api():
+        print('Pastebin scraping API unavailible.')
+        return
     input_filepath = os.path.join('debug', 'find_broken_downloads.failed_test.txt')
     redownload_broken_pastes(input_filepath)
 
