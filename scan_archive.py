@@ -93,7 +93,7 @@ while low_date < config.END_DATE:
         # NEW API STUFF
         # This link format does not limit results to one board!
         # http://desuarchive.org/_/api/chan/search/?boards=mlp&text=pastebin&start=2014-01-01&end=2014-01-08&page=1
-        search_page_url = '{base}/_/api/chan/search/?board={board}&text=pastebin&start={low}&end={high}&page={page_num}'.format(
+        search_page_url = '{base}/_/api/chan/search/?boards={board}&text=pastebin&start={low}&end={high}&page={page_num}'.format(
             base=config.BASE_URL, board=config.BOARD, low=low_date_str, high=high_date_str, page_num=page_num)
         print('Loading: {0!r}'.format(search_page_url))
         search_page_request = fetch(search_page_url)
