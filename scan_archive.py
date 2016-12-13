@@ -22,7 +22,6 @@ import config_archive_scan as config
 
 
 
-
 def fetch(url):
     for try_num in range(10):
         logging.debug('Fetch %s' % (url))
@@ -89,9 +88,8 @@ while low_date < config.END_DATE:
 
     previous_page_post_ids = []
     for page_num in xrange(1, config.MAX_SEARCH_PAGES):
-        # Load the page
         # NEW API STUFF
-        # This link format does not limit results to one board!
+        # Load the page
         # http://desuarchive.org/_/api/chan/search/?boards=mlp&text=pastebin&start=2014-01-01&end=2014-01-08&page=1
         search_page_url = '{base}/_/api/chan/search/?boards={board}&text=pastebin&start={low}&end={high}&page={page_num}'.format(
             base=config.BASE_URL, board=config.BOARD, low=low_date_str, high=high_date_str, page_num=page_num)
@@ -99,16 +97,29 @@ while low_date < config.END_DATE:
         search_page_request = fetch(search_page_url)
         raw_search_page = search_page_request.content
         search_page = json.loads(raw_search_page)
+##        if type(search_page) is type([]):# Fix for http://thebarchive.com, which is the same as desustorage except it's in a list [{'0':{'posts':[....]}]
+##            assert(len(search_page) == 1)
+##            search_page = search_page[0]
+
 
         # Stop if we have gone past the last page
-        if 'error' in search_page.keys():
-            if search_page['error'] == 'No results found.':
-                print('Detected end of results error message, moving on.')
-                break
-            else:
-                raise Exception('Got unknown error! raw_search_page: {0!r}'.format(raw_search_page))
+        if type(search_page) is type({}):# list does not have keys() method
+            if 'error' in search_page.keys():
+                if search_page['error'] == 'No results found.':
+                    print('Detected end of results error message, moving on.')
+                    break
+                else:
+                    raise Exception('Got unknown error! raw_search_page: {0!r}'.format(raw_search_page))
 
-        posts = search_page['0']['posts']
+        # Get the posts
+        if type(search_page) is type([]):
+            # http://thebarchive.com
+            posts = search_page[0]['posts']
+        elif type(search_page) is type({}):
+            # Desustorage
+            posts = search_page['0']['posts']
+        else: raise Exception('Unexpected result structure! raw_search_page: {0!r}'.format(raw_search_page))
+
         concatenated_comments = ''
         for post in posts:
             post_text = post['comment']
@@ -125,41 +136,6 @@ while low_date < config.END_DATE:
         print('Found {0} results this page'.format(len(page_user_links) + len(page_paste_links)))
         continue
         # /NEW API STUFF
-
-##        # OLD WEBPAGE STUFF
-##        #'http://desuarchive.org/mlp/search/text/pastebin/page/2/'
-##        # 'http://desuarchive.org/mlp/search/text/pastebin/start/2016-1-1/end/2016-2-1/page/2/'
-##        search_page_url = '{base}/{board}/search/text/pastebin/start/{low}/end/{high}/page/{page_num}/'.format(
-##            base=config.BASE_URL, board=config.BOARD, low=low_date_str, high=high_date_str, page_num=page_num)
-##        print('Loading: {0!r}'.format(search_page_url))
-##        search_page_request = fetch(search_page_url)
-##        search_page = search_page_request.content
-##
-##        # Find all pastebin user links
-##        page_user_links = re.findall('pastebin.com/u/[a-zA-Z0-9-_]+', search_page)
-##        all_user_links += page_user_links
-##
-##        # Find all pastebin paste links
-##        page_paste_links = re.findall('pastebin.com/[a-zA-Z0-9]{8}', search_page)
-##        all_paste_links += page_paste_links
-##
-##        print('Found {0} results this page'.format(len(page_user_links) + len(page_paste_links)))
-##
-##        # Stop if we have gone past the last page
-##        # Test postIDs
-##        current_page_post_ids = re.findall('data-post="(\d+)"', search_page)
-##        print('Found {0} postIDs this page.'.format(len(current_page_post_ids)))
-##        if current_page_post_ids == previous_page_post_ids:
-##            print('The results on this page are the same as last page, moving on.')
-##            break
-##        previous_page_post_ids = current_page_post_ids
-##        # Test for error message
-##        if ('<h4 class="alert-heading">Error!</h4>' in search_page) and ('No results found.' in search_page):
-##            print('Detected end of results error message, moving on.')
-##            break
-##        continue
-##        # /OLD WEBPAGE STUFF
-
     # Advance date by one step
     low_date = high_date
     high_date += config.STEP_LENGTH
@@ -167,21 +143,21 @@ while low_date < config.END_DATE:
 
 
 print('Finished searching for links.')
-
+print('Found {0} results in total.'.format(len(all_user_links) + len(all_paste_links)))
 
 # Remove duplicates
 all_paste_links = uniquify(all_paste_links)
 all_user_links = uniquify(all_user_links)
 
 
-### Save what we found.
-##with open(config.FOUND_USERS_FILEPATH, "wb") as uf:
-##    for user_link in all_user_links:
-##        uf.write('{0}\n'.format(user_link))
-##
-##with open(config.FOUND_PASTES_FILEPATH, "wb") as pf:
-##    for paste_link in all_paste_links:
-##        pf.write('{0}\n'.format(paste_link))
+# Save what we found.
+with open(config.FOUND_USERS_FILEPATH, "wb") as uf:
+    for user_link in all_user_links:
+        uf.write('{0}\n'.format(user_link))
+
+with open(config.FOUND_PASTES_FILEPATH, "wb") as pf:
+    for paste_link in all_paste_links:
+        pf.write('{0}\n'.format(paste_link))
 
 
 print('Done.')
