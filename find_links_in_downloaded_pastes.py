@@ -40,8 +40,8 @@ def parse_file(file_path):
         page_paste_links = re.findall('pastebin.com/[a-zA-Z0-9]{8}', data)
 
     found_links = page_user_links + page_paste_links
-    if found_links:
-        print('found_links: {0!r}'.format(found_links))
+##    if found_links:
+    print('found_links: {0!r}'.format(found_links))
     return found_links
 
 
@@ -59,13 +59,13 @@ def parse_files(base_path):
                 current_file_path = os.path.join(directory, filename)
                 print('Processing file {0}: {1!r}'.format(c, current_file_path))
                 links = parse_file(current_file_path)
-                all_links.append(all_links)
+                all_links += links
             continue
         print('Done walking over folder {0!r}'.format(directory))
         continue
     print('Finished walk for {0!r}'.format(base_path))
     print('{0} items in all_links.'.format(len(all_links)))
-##    print('all_links:\r\n {0!r}'.format(all_links))
+##    print('all_links:  {0!r}'.format(all_links))
     return all_links
 
 

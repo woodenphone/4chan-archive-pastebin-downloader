@@ -266,8 +266,8 @@ def main():
 
         # Perform downloads
         download_pastes_from_file(paste_list_filepath=config.FOUND_PASTES_FILEPATH, output_dir=output_dir)
-
         download_users_from_file(user_list_filepath=config.FOUND_USERS_FILEPATH, output_dir=output_dir)
+        # Save from links found in pastes
 
     print('Done.')
     return
