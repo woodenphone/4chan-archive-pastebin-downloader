@@ -76,7 +76,7 @@ def download_paste(paste_id, output_dir):
 
     # Skip if known bad pasteID
     if paste_id in ['scraping',]:
-        print('PasteID forbidden: {0}'.format(paste_id))
+        print('PasteID forbidden: {0!r}'.format(paste_id))
         return False
 
     # Download things

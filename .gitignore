@@ -6,6 +6,7 @@ download/
 config.py
 config_pastebin.py
 config_archive_scan.py
+config_download_scan.py
 
 found*.txt
 done*.txt
