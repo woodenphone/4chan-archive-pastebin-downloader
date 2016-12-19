@@ -75,7 +75,7 @@ def download_paste(paste_id, output_dir):
     metadata_filepath = os.path.join(output_dir, '{0}.json'.format(paste_id))
 
     # Skip if known bad pasteID
-    if paste_id in ['scraping',]:
+    if paste_id in ['scraping', 'download']:
         print('PasteID forbidden: {0!r}'.format(paste_id))
         return False
 
