@@ -13,8 +13,11 @@ import os
 import json
 
 
-INPUT_DIR = os.path.join()
-OUTPUT_DIR = os.path.join()
+
+
+
+INPUT_DIR = os.path.join('download')
+OUTPUT_DIR = os.path.join('debug', 'renamed_pastes')
 
 
 

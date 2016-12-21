@@ -27,6 +27,8 @@ def check_file(file_path):
             return False
         elif (data[0:9] == 'THIS IP: ') and (data[-70:] == 'ES NOT HAVE ACCESS. VISIT: http://pastebin.com/scraping TO GET ACCESS!'):# Scraping  API not configured
             return False
+        elif ('<title>Pastebin.com - Heavy Load Warning :(</title>' in data[0:500]):# Server overload error page, see private/error cases/heavy load/
+            return False
     return True
 
 

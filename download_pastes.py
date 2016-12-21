@@ -41,6 +41,10 @@ def fetch(url):
             continue
         else:
             time.sleep(1)
+            # Detect and handle certain known error pages
+            if ('<title>Pastebin.com - Heavy Load Warning :(</title>' in response.content[0:500]):# Server overload error page, see private/error cases/heavy load/
+                print('Overload error page detected, retrying...'.format())
+                continue# Retry
             return response
 
     raise Exception('Giving up!')

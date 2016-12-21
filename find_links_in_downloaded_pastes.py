@@ -49,7 +49,7 @@ def parse_raw(file_path):
         data = f.read()
 
         # Skip HTML files which are likely actually just error pages
-        if '<!DOCTYPE HTML>' in data[0:100]:
+        if ('<!DOCTYPE HTML>' in data[0:100]) or ('<!DOCTYPE html PUBLIC' in data[0:100]):
             print('ERROR! File was html and is probably an error page.! file_path: {0!r}'.format(file_path))
             with open(HTML_FILE_LIST_PATH, "a") as ef:# These are probably error pages, so build a list of them for fixing
                 ef.write('{0}\n'.format(file_path))
@@ -72,7 +72,7 @@ def parse_html(file_path):
     return a list of strings. ex. [] or ['string1']"""
     with open(file_path, "rb") as f:
         data = f.read()
-    assert('<!DOCTYPE HTML>' in data[0:100])# The file should always be an HTML file.
+##    assert('<!DOCTYPE HTML>' in data[0:100])# The file should always be an HTML file.
     # Find the user link if it exists
     # Let's use the PM link to avoid shennanigans
     pm_link_search = re.search('<a\shref="/message_compose\?to=([a-zA-Z0-9-_]+)">', data)# Find the username
@@ -118,6 +118,7 @@ def main():
     found_links = parse_files('download')
     deduped_links = uniquify(found_links)
     output_string = '\n'.join(deduped_links)
+    print('Saving found links to: {0}'.format(output_filepath))
     with open(output_filepath, "wb") as f:
         f.write(output_string)
     print('Finished.')
