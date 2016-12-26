@@ -11,8 +11,8 @@
 # stdlib
 import os
 import json
-
-
+import re
+import shutil
 
 
 
@@ -30,25 +30,88 @@ def find_username(html):
         return None
 
 
-def handle_single_paste(paste_id):
+
+def handle_single_paste(paste_id, origin_dir, base_output_dir):
+    # Prebuild filepaths
+    input_scrape_filepath = os.path.join(origin_dir, '{0}.api_raw.txt'.format(paste_id))
+    input_raw_filepath = os.path.join(origin_dir, '{0}.raw.txt'.format(paste_id))
+    input_webpage_filepath = os.path.join(origin_dir, '{0}.htm'.format(paste_id))
+    input_metadata_filepath = os.path.join(origin_dir, '{0}.json'.format(paste_id))
+
+    # Test expected filepaths
+    if os.path.exists(input_scrape_filepath):
+        print('Expected {0!r} to exist but it does not! Skipping this paste.'.format(input_scrape_filepath))
+        return False
+    if os.path.exists(input_raw_filepath):
+        print('Expected {0!r} to exist but it does not! Skipping this paste.'.format(input_raw_filepath))
+        return False
+    if os.path.exists(input_webpage_filepath):
+        print('Expected {0!r} to exist but it does not! Skipping this paste.'.format(input_webpage_filepath))
+        return False
+    if os.path.exists(input_metadata_filepath):
+        print('Expected {0!r} to exist but it does not! Skipping this paste.'.format(input_metadata_filepath))
+        return False
 
     # Find title
-    # Try to find username
-    # Build new filename
-    new_base_filename = '{user}.{title}.{pasteid}'.format()
-    # Create new file
+    with open(input_metadata_filepath, "rb") as meta_f:# API metadata
+        metadata = json.load(meta_f)
+        title = metadata['title']
+        sanitised_title = re.sub('[^0-9a-zA-Z-_]', '', title)
 
+    # Try to find username
+    # HTML file always has it
+    with open(input_webpage_filepath, "rb") as web_f:
+        html = web_f.read()
+        username = find_username(html)
+        re.sub()
+        sanitised_username = re.sub('[^0-9a-zA-Z-_]', '', username)
+
+    # Generate output folder path and ensure it exists
+    output_dir = os.path.join(base_output_dir, sanitised_username)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Build new filenames
+    output_scrape_filepath = os.path.join(output_dir, '{title}.{pasteid}.api_raw.txt'.format(title=sanitised_title,pasteid=paste_id))
+    output_raw_filepath = os.path.join(output_dir, '{title}.{pasteid}.raw.txt'.format(title=sanitised_title,pasteid=paste_id))
+    output_webpage_filepath = os.path.join(output_dir, '{title}.{pasteid}.htm'.format(title=sanitised_title,pasteid=paste_id))
+    output_metadata_filepath = os.path.join(output_dir, '{title}.{pasteid}.json'.format(title=sanitised_title,pasteid=paste_id))
+
+    # Create new files
+    shutil.copyfile(src=input_scrape_filepath, dst=output_scrape_filepath)
+    shutil.copyfile(src=input_raw_filepath, dst=output_raw_filepath)
+    shutil.copyfile(src=input_webpage_filepath, dst=output_webpage_filepath)
+    shutil.copyfile(src=input_metadata_filepath, dst=output_metadata_filepath)
+    print('Created new files for {0!r}'.format(paste_id))
+    return True
 
 
 # Walk over files in input path
-c = 0
+all_seen_paste_ids = []
+files_seen = 0
 print('Starting walk for {0!r}'.format(base_path))
 for directory, dirnames, filenames in os.walk(base_path):
     print('Now walking over folder {0!r}'.format(directory))
+    # Get paste IDs in this folder
+    folder_paste_ids = []
     for filename in filenames:
-        c += 1
-        current_file_path = os.path.join(directory, filename)
-        print('Processing file {0}: {1!r}'.format(c, current_file_path))
+        files_seen += 1
+        if ((filename.endswith('.raw.txt'))
+        or (filename.endswith('.raw.txt'))
+        or (filename.endswith('.raw.txt'))
+        or (filename.endswith('.raw.txt'))):
+            new_paste_id = filename.split('.')[-2]
+            folder_paste_ids.append(new_paste_id)
+    all_seen_paste_ids += folder_paste_ids
+
+    # Process found paste IDs for this folder
+    for paste_id in folder_paste_ids:
+        handle_single_paste(paste_id, origin_dir, output_dir)
+
+
+
+
+        print('Processing file {0}: {1!r}'.format(files_seen, current_file_path))
 
 
 

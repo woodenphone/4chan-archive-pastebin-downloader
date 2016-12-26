@@ -50,6 +50,19 @@ def fetch(url):
     raise Exception('Giving up!')
 
 
+def detect_error_page(data):
+    """Detect paste-related error pages (Not site overload page)
+    return True if error, False if okay"""
+    if data == 'Error, we cannot find this paste.':# Deleted or otherwise invalid pasteid?
+        return True
+    elif data == 'Error, this is not a public paste.':# Unlisted?
+        return True
+    elif data == 'Error, this is a private paste. If this is your private paste, please login to Pastebin first.':# Private paste /raw/
+        return True
+    return False
+
+
+
 def uniquify(seq, idfun=None):
     # List uniquifier from
     # http://www.peterbe.com/plog/uniqifiers-benchmark
