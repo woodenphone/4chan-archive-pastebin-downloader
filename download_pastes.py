@@ -96,6 +96,11 @@ def download_paste(paste_id, output_dir):
         print('PasteID forbidden: {0!r}'.format(paste_id))
         return False
 
+    # Ensure output dir exists
+    if not os.path.exists(output_dir):
+        print('Creating dir: {0!r}'.format(output_dir))
+        os.makedirs(output_dir)
+
     # Download things
     # Get paste metadata
     if not os.path.exists(metadata_filepath):
@@ -168,8 +173,6 @@ def download_user_pastes(user, output_dir):
         print('No pastes found for user: {0!r}'.format(user))
         return
     user_output_dir = os.path.join(output_dir, user)
-    if not os.path.exists(user_output_dir):
-        os.makedirs(user_output_dir)
 
     download_pastes(paste_ids=user_pastes, output_dir=user_output_dir)
 
@@ -280,6 +283,11 @@ def main():
         output_dir = config.OUTPUT_DIR
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
+
+##        # DEBUG/WORK
+##        download_paste(paste_id='ucnJ08Dx', output_dir=os.path.join('debug', 'singlemode'))
+##        return # REMOVEME
+##        # /DEBUG/WORK
 
         # Perform downloads
         download_pastes_from_file(paste_list_filepath=config.FOUND_PASTES_FILEPATH, output_dir=output_dir)

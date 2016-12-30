@@ -50,3 +50,16 @@ given PASTE_ID and OUTPUT_DIR:
 Regex for updating filenames from PASTE_ID.txt to PASTE_ID.api_raw.txt
 ([a-zA-z0-9][{8})
 \1.api_raw
+
+
+Regex for finding paste title from the paste page HTML
+# Allowed characters for a title:
+Seems to include too many for simpler regex
+# From my testing, this is possible:
+    <div class="paste_box_line1" title="&quot;><h1>Fake Title</h1></div>"><h1>"&gt;&lt;h1&gt;Fake Title&lt;/h1&gt;&lt;/div&gt;</h1></div>
+# Known valid title:
+    <div class="paste_box_line1" title="Mirrors Edge Ch1 (derpy)"><h1>Mirrors Edge Ch1 (derpy)</h1></div>   
+# Convert spaces to \s
+<div\sclass="paste_box_line1"\stitle="Mirrors Edge Ch1 (derpy)"><h1>Mirrors Edge Ch1 (derpy)</h1></div>
+# Crop down to a single instance of the title and capture the title
+<div\sclass="paste_box_line1"\stitle="([0-9a-zA-Z]{})">
