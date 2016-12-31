@@ -14,11 +14,11 @@ import json
 import re
 import shutil
 
+FAILED_LIST_FILEPATH = os.path.join('debug', 'add_files.to_filenames.failed_list.txt')
 
-
-#INPUT_DIR = os.path.join('download')
-INPUT_DIR = os.path.join('debug', 'singlemode')
-OUTPUT_DIR = os.path.join('debug', 'renamed_pastes2')
+INPUT_DIR = os.path.join('download')
+#INPUT_DIR = os.path.join('debug', 'singlemode')
+OUTPUT_DIR = os.path.join('debug', 'renamed_pastes')
 
 
 
@@ -40,7 +40,7 @@ def find_title(html):# TODO
     if raw_title_search:
         # If there is a title
         raw_title = raw_title_search.group(1)
-        print('raw_title: {0!r}'.format(raw_title))
+        #print('raw_title: {0!r}'.format(raw_title))
         return raw_title
     else:
         # If there is no title
@@ -52,7 +52,7 @@ def handle_single_paste(paste_id, origin_dir, base_output_dir):
     """Process a single paste.
     Find the title and user, generate a filename, and copy the paste files to a subfolder in a target location.
     Return True if successful, False if unsuccessful."""
-    print('Processing paste_id: {0} in origin_dir: {1!r} to base_output_dir: {2!r}'.format(paste_id, origin_dir, base_output_dir))
+    #print('Processing paste_id: {0} in origin_dir: {1!r} to base_output_dir: {2!r}'.format(paste_id, origin_dir, base_output_dir))
     # Prebuild filepaths
     input_scrape_filepath = os.path.join(origin_dir, '{0}.api_raw.txt'.format(paste_id))
     input_raw_filepath = os.path.join(origin_dir, '{0}.raw.txt'.format(paste_id))
@@ -100,7 +100,7 @@ def handle_single_paste(paste_id, origin_dir, base_output_dir):
     shutil.copyfile(src=input_raw_filepath, dst=output_raw_filepath)
     shutil.copyfile(src=input_webpage_filepath, dst=output_webpage_filepath)
     shutil.copyfile(src=input_metadata_filepath, dst=output_metadata_filepath)
-    print('Created new files for {0!r}'.format(paste_id))
+    #print('Created new files for {0!r}'.format(paste_id))
     return True
 
 
@@ -114,13 +114,17 @@ base_output_dir = OUTPUT_DIR
 all_seen_paste_ids = []
 done_paste_ids = []
 files_seen = 0
+tried_pastes = 0
 print('Starting walk for {0!r}'.format(base_path))
 for directory, dirnames, filenames in os.walk(base_path):
     print('Now walking over folder {0!r}'.format(directory))
+
     # Get paste IDs in this folder
     folder_paste_ids = []
     for filename in filenames:
         files_seen += 1
+##        if files_seen % 100 == 0:
+##                    print('files_seen: {0}'.format(files_seen))
         if ((filename.endswith('.api_raw.txt'))
         or (filename.endswith('.raw.txt'))
         or (filename.endswith('.htm'))
@@ -133,8 +137,19 @@ for directory, dirnames, filenames in os.walk(base_path):
     # Process found paste IDs for this folder
     for paste_id in folder_paste_ids:
         if paste_id not in done_paste_ids:
-            handle_single_paste(paste_id=paste_id, origin_dir=directory, base_output_dir=base_output_dir)
-            done_paste_ids.append(paste_id)
+            tried_pastes += 1
+            if tried_pastes % 100 == 0:
+                        print('tried_pastes: {0}'.format(tried_pastes))
+            origin_dir = directory
+            success = handle_single_paste(paste_id=paste_id, origin_dir=origin_dir, base_output_dir=base_output_dir)
+            if success:
+                done_paste_ids.append(paste_id)
+            else:
+                # Record failure
+                with open(FAILED_LIST_FILEPATH, 'ab') as fail_f:
+                    #fail_f.write('ABC')
+                    log_line = 'paste_id: {0!r}, origin_dir: {1!r}, base_output_dir: {2!r}\n'.format(paste_id, directory, base_output_dir)
+                    fail_f.write(log_line)
         continue
 
 
