@@ -62,4 +62,4 @@ Seems to include too many for simpler regex
 # Convert spaces to \s
 <div\sclass="paste_box_line1"\stitle="Mirrors Edge Ch1 (derpy)"><h1>Mirrors Edge Ch1 (derpy)</h1></div>
 # Crop down to a single instance of the title and capture the title
-<div\sclass="paste_box_line1"\stitle="([0-9a-zA-Z]{})">
+<div\sclass="paste_box_line1"\stitle="([^"]+)">
