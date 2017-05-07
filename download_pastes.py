@@ -104,32 +104,32 @@ def download_paste(paste_id, output_dir):
     # Download things
     # Get paste metadata
     if not os.path.exists(metadata_filepath):
-        metadata_url = 'http://pastebin.com/api_scrape_item_meta.php?i={0}'.format(paste_id)
+        metadata_url = 'https://pastebin.com/api_scrape_item_meta.php?i={0}'.format(paste_id)
         metadata_response = fetch(metadata_url)
-        if (metadata_response.content[0:9] == 'THIS IP: ') and (metadata_response.content[-70:] == 'ES NOT HAVE ACCESS. VISIT: http://pastebin.com/scraping TO GET ACCESS!'):# Scraping  API not configured
+        if (metadata_response.content[0:9] == 'THIS IP: '):# Scraping  API not configured
             raise Exception('API failure!')
         with open(metadata_filepath, "wb") as meta_f:# API metadata
             meta_f.write(metadata_response.content)
 
     # Get paste scrape api raw data
     if not os.path.exists(scrape_filepath):
-        scrape_url = 'http://pastebin.com/api_scrape_item.php?i={0}'.format(paste_id)
+        scrape_url = 'https://pastebin.com/api_scrape_item.php?i={0}'.format(paste_id)
         scrape_response = fetch(scrape_url)
-        if (scrape_response.content[0:9] == 'THIS IP: ') and (scrape_response.content[-70:] == 'ES NOT HAVE ACCESS. VISIT: http://pastebin.com/scraping TO GET ACCESS!'):# Scraping  API not configured
+        if (scrape_response.content[0:9] == 'THIS IP: '):# Scraping  API not configured
             raise Exception('API failure!')
         with open(scrape_filepath, "wb") as api_f:# API raw paste
             api_f.write(scrape_response.content)
 
     # Get paste regular raw data
     if not os.path.exists(raw_filepath):
-        raw_url = 'http://pastebin.com/raw/{0}'.format(paste_id)
+        raw_url = 'https://pastebin.com/raw/{0}'.format(paste_id)
         raw_response = fetch(raw_url)
         with open(raw_filepath, "wb") as reg_f:# Regular raw paste
             reg_f.write(raw_response.content)
 
     # Get paste webpage data
     if not os.path.exists(webpage_filepath):
-        webpage_url = 'http://pastebin.com/{0}'.format(paste_id)
+        webpage_url = 'https://pastebin.com/{0}'.format(paste_id)
         webpage_response = fetch(webpage_url)
         with open(webpage_filepath, "wb") as web_f:# Webpage of paste
             web_f.write(webpage_response.content)
@@ -152,7 +152,7 @@ def download_user_pastes(user, output_dir):
     user_pastes = []
     for p in xrange(1,100):
         # Load the page
-        user_page_url = 'http://pastebin.com/u/{0}/{1}'.format(user, p)
+        user_page_url = 'https://pastebin.com/u/{0}/{1}'.format(user, p)
         print('Loading: {0!r}'.format(user_page_url))
         user_page_request = fetch(user_page_url)
         page = user_page_request.content
@@ -182,7 +182,7 @@ def download_user_pastes(user, output_dir):
 
 def test_scraping_api():
     # Verify we're authenticated
-    api_test_url = 'http://pastebin.com/api_scraping.php'
+    api_test_url = 'https://pastebin.com/api_scraping.php'
     api_test_request = fetch(api_test_url)
     print('api_test_request.content: {0}'.format(api_test_request.content))
 
@@ -200,7 +200,7 @@ def test_scraping_api():
 
 ### To login:
 ##
-##login_url = 'http://pastebin.com/api/api_login.php'
+##login_url = 'https://pastebin.com/api/api_login.php'
 
 
 
@@ -218,7 +218,7 @@ def test_scraping_api():
 
 
 ##user_url = (
-##    'http://pastebin.com/api/api_post.php?'
+##    'https://pastebin.com/api/api_post.php?'
 ##    'api_dev_key={dev_key}'
 ##    '&api_user_key={user_key}'
 ##    '&'
@@ -229,7 +229,7 @@ def test_scraping_api():
 
 
 
-##'http://pastebin.com/api/api_post.php?api_dev_key=REMOVED&api_user_key={user_key}'
+##'https://pastebin.com/api/api_post.php?api_dev_key=REMOVED&api_user_key={user_key}'
 
 
 def download_users_from_file(user_list_filepath, output_dir):
