@@ -10,5 +10,5 @@ config_download_scan.py
 
 found*.txt
 done*.txt
-
+*.txt
 *.pyc
