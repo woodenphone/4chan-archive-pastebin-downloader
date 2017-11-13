@@ -133,6 +133,15 @@ while low_date < config.END_DATE:
         page_paste_links = re.findall('pastebin.com/[a-zA-Z0-9]{8}', concatenated_comments)
         all_paste_links += page_paste_links
 
+        # Save found links
+        with open(config.FOUND_USERS_FILEPATH, "ab") as uf:
+            for user_link in page_user_links:
+                uf.write('{0}\n'.format(user_link))
+
+        with open(config.FOUND_PASTES_FILEPATH, "ab") as pf:
+            for paste_link in page_paste_links:
+                pf.write('{0}\n'.format(paste_link))
+
         print('Found {0} results this page'.format(len(page_user_links) + len(page_paste_links)))
         continue
         # /NEW API STUFF
@@ -140,26 +149,7 @@ while low_date < config.END_DATE:
     low_date = high_date
     high_date += config.STEP_LENGTH
     continue
-
-
 print('Finished searching for links.')
-print('Found {0} results in total.'.format(len(all_user_links) + len(all_paste_links)))
-
-# Remove duplicates
-all_paste_links = uniquify(all_paste_links)
-all_user_links = uniquify(all_user_links)
-
-
-# Save what we found.
-with open(config.FOUND_USERS_FILEPATH, "wb") as uf:
-    for user_link in all_user_links:
-        uf.write('{0}\n'.format(user_link))
-
-with open(config.FOUND_PASTES_FILEPATH, "wb") as pf:
-    for paste_link in all_paste_links:
-        pf.write('{0}\n'.format(paste_link))
-
-
 print('Done.')
 
 
