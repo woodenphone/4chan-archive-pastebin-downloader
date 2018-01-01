@@ -234,7 +234,7 @@ def test_scraping_api():
 
 def download_users_from_file(user_list_filepath, output_dir):
     with open(user_list_filepath, "rb") as uf:
-        with open(config.DONE_USERS_FILEPATH, 'wb') as df:
+        with open(config.DONE_USERS_FILEPATH, 'ab') as df:
             c = 0
             for line in uf:
                 c += 1
@@ -254,7 +254,7 @@ def download_users_from_file(user_list_filepath, output_dir):
 
 def download_pastes_from_file(paste_list_filepath, output_dir):
     with open(paste_list_filepath, "rb") as pf:
-        with open(config.DONE_PASTES_FILEPATH, 'wb') as df:
+        with open(config.DONE_PASTES_FILEPATH, 'ab') as df:
             c = 0
             for line in pf:
                 c += 1

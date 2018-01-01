@@ -115,7 +115,7 @@ def parse_files(base_path):
 
 def main():
     output_filepath = os.path.join('debug', 'find_links_in_downloaded_pastes.found_links.txt')
-    found_links = parse_files('download')
+    found_links = parse_files(config_download_scan.TARGET_DIR)
     deduped_links = uniquify(found_links)
     output_string = '\n'.join(deduped_links)
     print('Saving found links to: {0}'.format(output_filepath))

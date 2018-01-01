@@ -15,7 +15,7 @@ from download_pastes import *
 
 INPUT_LIST_FILEPATH = os.path.join('debug', 'find_links_in_downloaded_pastes.found_links.txt')
 DONE_LIST_FILEPATH= os.path.join('debug', 'download_links_from_downloaded_pastes.done.txt')
-OUTPUT_DIR = os.path.join('download')
+OUTPUT_DIR = config.OUTPUT_DIR# from download_pastes
 
 
 
