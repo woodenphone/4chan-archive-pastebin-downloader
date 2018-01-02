@@ -3,7 +3,7 @@ private/
 download/
 pre q42017 download/
 download trash 2017/
-
+*download*/
 
 config.py
 config_pastebin.py
