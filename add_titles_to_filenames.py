@@ -82,7 +82,7 @@ def handle_single_paste(paste_id, origin_dir, base_output_dir):
         sanitised_username = re.sub('[^0-9a-zA-Z-_]', '', username)
         # Find title
         title = find_title(html)
-        sanitised_title = re.sub('[^0-9a-zA-Z-_]', '', title)
+        sanitised_title = re.sub('[^0-9a-zA-Z-_ ]', '', title)
 
     # Generate output folder path and ensure it exists
     output_dir = os.path.join(base_output_dir, sanitised_username)
