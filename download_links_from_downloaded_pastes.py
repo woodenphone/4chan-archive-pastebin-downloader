@@ -21,7 +21,7 @@ OUTPUT_DIR = config.OUTPUT_DIR# from download_pastes
 
 def download_from_file(paste_list_filepath, output_dir):
     with open(paste_list_filepath, "rb") as pf:
-        with open(DONE_LIST_FILEPATH, 'wb') as df:
+        with open(DONE_LIST_FILEPATH, 'ab') as df:
             c = 0
             for line in pf:
                 c += 1
