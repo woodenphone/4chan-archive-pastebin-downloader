@@ -78,7 +78,7 @@ def parse_html(file_path):
     pm_link_search = re.search('<a\shref="/message_compose\?to=([a-zA-Z0-9-_]+)">', data)# Find the username
     if pm_link_search:
         username = pm_link_search.group(1)
-        user_link = 'http://pastebin.com/u/{0}'.format(username)# Build the user link back from the username
+        user_link = 'pastebin.com/u/{0}'.format(username)# Build the user link back from the username
         print('user_link: {0!r}'.format(user_link))
         return [user_link]
     else:
